@@ -97,10 +97,6 @@ const pgPool = new Pool({
 app.use('/api/auth', authRoutes);
 app.use('/api/health-records', healthRecordRoutes);
 
-// Basic route
-app.get('/', (req, res) => {
-  res.json({ message: 'Health Stats Tracker API' });
-});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

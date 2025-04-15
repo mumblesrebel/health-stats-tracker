@@ -1,0 +1,17 @@
+services:
+  - type: static
+    name: health-stats-tracker-frontend
+    buildCommand: cd frontend-app && npm ci && npm run build
+    staticPublishPath: ./frontend-app/dist
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: VITE_API_URL
+        value: https://health-stats-api.onrender.com
+      - key: VITE_API_TIMEOUT
+        value: 30000
+      - key: VITE_ENABLE_MOCK_DATA
+        value: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

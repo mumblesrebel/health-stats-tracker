@@ -14,15 +14,14 @@ services:
       - key: PORT
         value: 8000
 
-  - type: web
-    name: health-stats-tracker-frontend
-    env: node
-    buildCommand: cd frontend-app && npm ci && npm run build
-    startCommand: cd frontend-app && npm run preview
+  - type: static
+    name: health-stats-frontend
+    buildCommand: cd frontend-app && npm install && npm run build
+    publishPath: frontend-app/dist
     envVars:
       - key: VITE_API_URL
         value: https://health-stats-api.onrender.com
       - key: VITE_API_TIMEOUT
-        value: 30000
+        value: "30000"
       - key: VITE_ENABLE_MOCK_DATA
-        value: false
+        value: "false"

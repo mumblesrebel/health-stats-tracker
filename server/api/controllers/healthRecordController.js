@@ -1,11 +1,12 @@
 const HealthRecord = require('../models/HealthRecord');
-const AWS = require('aws-sdk');
-
-// Configure AWS
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
+let s3;
+if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) {
+  const AWS = require('aws-sdk');
+  s3 = new AWS.S3({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  });
+}
 
 exports.createRecord = async (req, res) => {
   try {
@@ -13,7 +14,7 @@ exports.createRecord = async (req, res) => {
     const file = req.file;
 
     let fileData = {};
-    if (file) {
+    if (file && s3 && process.env.AWS_BUCKET_NAME) {
       // Upload file to S3
       const uploadResult = await s3.upload({
         Bucket: process.env.AWS_BUCKET_NAME,
@@ -104,7 +105,7 @@ exports.deleteRecord = async (req, res) => {
     }
 
     // Delete file from S3 if exists
-    if (record.originalFile && record.originalFile.url) {
+    if (record.originalFile && record.originalFile.url && s3 && process.env.AWS_BUCKET_NAME) {
       const key = record.originalFile.url.split('.com/')[1];
       await s3.deleteObject({
         Bucket: process.env.AWS_BUCKET_NAME,

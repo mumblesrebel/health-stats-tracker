@@ -2,7 +2,7 @@ services:
   - type: web
     name: health-stats-api
     env: node
-    rootDirectory: server/api
+    root: server/api
     buildCommand: npm install
     startCommand: node server.js
     envVars:
@@ -18,7 +18,7 @@ services:
   - type: web
     name: health-stats-tracker-frontend
     env: node
-    rootDirectory: frontend-app
+    root: frontend-app
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
     envVars:

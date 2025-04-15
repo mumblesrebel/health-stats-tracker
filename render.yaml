@@ -2,7 +2,7 @@ services:
   - type: web
     name: health-stats-api
     env: node
-    rootDirectory: ./server/api
+    rootDirectory: server/api
     buildCommand: npm install
     startCommand: node server.js
     envVars:

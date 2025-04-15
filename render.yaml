@@ -15,7 +15,7 @@ services:
       - key: PORT
         value: 8000
 
-  - type: static-site
+  - type: website
     name: health-stats-tracker-frontend
     buildCommand: cd frontend-app && npm ci && npm run build
     staticPublishPath: ./frontend-app/dist

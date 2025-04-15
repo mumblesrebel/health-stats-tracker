@@ -11,11 +11,11 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: MONGODB_URI
-        value: mongodb+srv://health-stats-user:${MONGODB_PASSWORD}@cluster0.mongodb.net/health-stats?retryWrites=true&w=majority
+        sync: false
       - key: PORT
         value: 8000
 
-  - type: static
+  - type: static-site
     name: health-stats-tracker-frontend
     buildCommand: cd frontend-app && npm ci && npm run build
     staticPublishPath: ./frontend-app/dist

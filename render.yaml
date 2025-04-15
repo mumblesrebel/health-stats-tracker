@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: health-stats-api
+    env: node
+    rootDirectory: ./server/api
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false
+      - key: PORT
+        value: 8000
+
+  - type: static
+    name: health-stats-tracker-frontend
+    buildCommand: cd frontend-app && npm ci && npm run build
+    staticPublishPath: ./frontend-app/dist
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: VITE_API_URL
+        value: https://health-stats-api.onrender.com
+      - key: VITE_API_TIMEOUT
+        value: 30000
+      - key: VITE_ENABLE_MOCK_DATA
+        value: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

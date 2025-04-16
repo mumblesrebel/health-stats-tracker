@@ -2,11 +2,21 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 exports.register = async (req, res) => {
-  console.log('Registration request received:', req.body);
+  console.log('Registration request received:', {
+    body: req.body,
+    headers: req.headers,
+    method: req.method,
+    path: req.path
+  });
   
   try {
     const { email, password, firstName, lastName } = req.body;
     console.log('Parsed registration data:', { email, firstName, lastName });
+
+    if (!email || !password || !firstName || !lastName) {
+      console.error('Registration failed: Missing required fields', { email, firstName, lastName });
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -51,11 +61,25 @@ exports.register = async (req, res) => {
         role: user.role
       }
     };
-    console.log('Sending response:', response);
+    console.log('Preparing response:', response);
+    
+    // Set response headers
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    console.log('Sending response with headers:', {
+      status: 201,
+      headers: res.getHeaders(),
+      body: response
+    });
     
     res.status(201).json(response);
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Registration error:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
     res.status(500).json({ error: 'Error registering user' });
   }
 };

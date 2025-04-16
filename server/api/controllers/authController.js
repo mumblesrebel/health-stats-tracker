@@ -85,21 +85,41 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
+  console.log('Login request received:', {
+    body: req.body,
+    headers: req.headers,
+    method: req.method,
+    path: req.path
+  });
+
   try {
     const { email, password } = req.body;
+    
+    if (!email || !password) {
+      console.error('Login failed: Missing email or password');
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
 
-    // Find user
+    console.log('Looking up user with email:', email);
+    
+    // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      console.log('Login failed: User not found');
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
 
+    console.log('User found, checking password...');
+    
     // Check password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    const isValidPassword = await user.comparePassword(password);
+    if (!isValidPassword) {
+      console.log('Login failed: Invalid password');
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
 
+    console.log('Password valid, generating token...');
+    
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id },
@@ -107,7 +127,7 @@ exports.login = async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    res.json({
+    const response = {
       token,
       user: {
         id: user._id,
@@ -116,8 +136,27 @@ exports.login = async (req, res) => {
         lastName: user.lastName,
         role: user.role
       }
+    };
+
+    console.log('Login successful, sending response...');
+    
+    // Set response headers
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    console.log('Sending response with headers:', {
+      status: 200,
+      headers: res.getHeaders(),
+      body: response
     });
+    
+    res.status(200).json(response);
   } catch (error) {
+    console.error('Login error:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
     res.status(500).json({ error: 'Error logging in' });
   }
 };

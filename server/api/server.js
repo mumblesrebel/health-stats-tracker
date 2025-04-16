@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { Pool } = require('pg');
 
 const authRoutes = require('./routes/auth');
 const healthRecordRoutes = require('./routes/healthRecords');
@@ -29,9 +28,10 @@ app.use((req, res, next) => {
 
 const corsOptions = {
   origin: '*',
-  credentials: true,
+  credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
+  exposedHeaders: ['Content-Type', 'Accept']
 };
 
 app.use(cors(corsOptions));
@@ -87,10 +87,6 @@ mongoose.connect(process.env.MONGODB_URI, {
     error: err.message,
     code: err.code
   });
-});
-
-const pgPool = new Pool({
-  connectionString: process.env.POSTGRES_URI
 });
 
 // Routes
